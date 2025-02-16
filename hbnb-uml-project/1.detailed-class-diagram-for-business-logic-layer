@@ -1,0 +1,168 @@
+@startuml
+' Style settings (optional, for better readability)
+skinparam class {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+  FontName Arial
+  FontSize 10
+}
+
+skinparam note {
+  BackgroundColor LightYellow
+  BorderColor Black
+  FontSize 10
+}
+
+' Abstract Base Class for Common Attributes
+abstract class BaseModel {
+  - id : UUID
+  - createdAt : DateTime
+  - updatedAt : DateTime
+  --
+  + BaseModel(id: UUID, createdAt: DateTime, updatedAt: DateTime)
+  + getId() : UUID
+  + getCreatedAt() : DateTime
+  + getUpdatedAt() : DateTime
+  + setUpdatedAt(updatedAt: DateTime) : void
+  + toString() : String
+  # validate() : bool {abstract}  ' Protected - Meant to be overridden in subclasses
+}
+
+' User Class
+class User extends BaseModel {
+  - firstName : String
+  - lastName : String
+  - email : String
+  - password : String
+  + phoneNumber : String
+  + profilePicture : String
+  + bio : String
+  --
+  + User(id: UUID, createdAt: DateTime, updatedAt: DateTime, firstName: String, lastName: String, email: String, password: String)
+  + getFirstName() : String
+  + setFirstName(firstName: String) : void
+  + getLastName() : String
+  + setLastName(lastName: String) : void
+  + getEmail() : String
+  + setEmail(email: String) : void
+  + getPassword() : String
+  + setPassword(password: String) : void
+  + getPhoneNumber() : String
+  + setPhoneNumber(phoneNumber: String) : void
+  + getProfilePicture() : String
+  + setProfilePicture(profilePicture: String) : void
+  + getBio() : String
+  + setBio(bio: String) : void
+  + toString() : String
+  # validate() : bool
+}
+
+' Place Class
+class Place extends BaseModel {
+  - ownerId : UUID
+  - name : String
+  - description : String
+  - latitude : Double
+  - longitude : Double
+  - pricePerNight : Double
+  + maxGuests : Integer
+  + numberRooms : Integer
+  + numberBathrooms : Integer
+  + city : String
+  + state : String
+  + country : String
+  --
+  + Place(id: UUID, createdAt: DateTime, updatedAt: DateTime, ownerId: UUID, name: String, description: String, latitude: Double, longitude: Double, pricePerNight: Double)
+  + getOwnerId() : UUID
+  + setOwnerId(ownerId: UUID) : void
+  + getName() : String
+  + setName(name: String) : void
+  + getDescription() : String
+  + setDescription(description: String) : void
+  + getLatitude() : Double
+  + setLatitude(latitude: Double) : void
+  + getLongitude() : Double
+  + setLongitude(longitude: Double) : void
+  + getPricePerNight() : Double
+  + setPricePerNight(pricePerNight: Double) : void
+  + getMaxGuests() : Integer
+  + setMaxGuests(maxGuests : Integer) : void
+  + getNumberRooms() : Integer
+  + setNumberRooms(numberRooms : Integer) : void
+  + getNumberBathrooms() : Integer
+  + setNumberBathrooms(numberBathrooms : Integer) : void
+  + getCity() : String
+  + setCity(city : String) : void
+  + getState() : String
+  + setState(state : String) : void
+  + getCountry() : String
+  + setCountry(country : String) : void
+  + toString() : String
+  # validate() : bool
+}
+
+' Review Class
+class Review extends BaseModel {
+  - placeId : UUID
+  - userId : UUID
+  - rating : Integer
+  - comment : String
+  --
+  + Review(id: UUID, createdAt: DateTime, updatedAt: DateTime, placeId: UUID, userId: UUID, rating: Integer, comment: String)
+  + getPlaceId() : UUID
+  + setPlaceId(placeId: UUID) : void
+  + getUserId() : UUID
+  + setUserId(userId: UUID) : void
+  + getRating() : Integer
+  + setRating(rating: Integer) : void
+  + getComment() : String
+  + setComment(comment: String) : void
+  + toString() : String
+  # validate() : bool
+}
+
+' Amenity Class
+class Amenity extends BaseModel {
+  - name : String
+  - description : String
+  --
+  + Amenity(id: UUID, createdAt: DateTime, updatedAt: DateTime, name: String, description: String)
+  + getName() : String
+  + setName(name: String) : void
+  + getDescription() : String
+  + setDescription(description: String) : void
+  + toString() : String
+  # validate() : bool
+}
+
+' Association between Place and Amenity (Many-to-Many)
+Place -- "*" Amenity : includes >
+
+' Association between Place and Review (One-to-Many)
+Place "1" -- "*" Review : has >
+
+' Association between User and Review (One-to-Many)
+User "1" -- "*" Review : writes >
+
+' Association between User and Place (One-to-Many - Owner)
+User "1" -- "0..*" Place : owns >
+
+
+' Inheritance relationships
+User --|> BaseModel
+Place --|> BaseModel
+Review --|> BaseModel
+Amenity --|> BaseModel
+
+note top of User : Represents a user of the HBnB application. Includes personal information and authentication details.
+
+note top of Place : Represents a place listed on the HBnB platform.  Includes details about the location, price, and amenities.
+
+note top of Review : Represents a review of a Place by a User. Includes a rating and a comment.
+
+note top of Amenity : Represents an amenity offered at a Place.  Examples: Wifi, Pool, Kitchen.
+
+note top of BaseModel :  Abstract base class for all entities. Contains common attributes like ID, creation date, and update date.  The validate() method should be implemented in derived classes to enforce business rules.  All subclasses inherit common attributes and behaviors.  ID is a UUID. Timestamps are DateTime objects.
+
+@enduml
