@@ -17,5 +17,7 @@ https://github.com/seb25000/Holberton-New-HBnB/blob/main/hbnb-uml-project/README
 
 2. Sequence Diagrams for API Calls :
 
-https://github.com/seb25000/Holberton-New-HBnB/blob/main/hbnb-uml-project/README.md
+https://github.com/seb25000/Holberton-New-HBnB/blob/main/hbnb-uml-project/README
+
+
 

@@ -1,0 +1,339 @@
+Tâche 1 : Diagramme de package de haut niveau
+---------------------------------------------
+
+Diagramme (Description) :
+
+package PresentationLayer {
+    class Services {
+        + API Endpoints
+        + Request Handling
+        + Response Formatting
+    }
+}
+
+package BusinessLogicLayer {
+    class Models {
+        + User
+        + Place
+        + Review
+        + Amenity
+        + ... (other entities)
+    }
+}
+
+package PersistenceLayer {
+    class DatabaseInterface {
+        + Data Access Objects (DAOs)
+        + Database Connection Management
+        + Query Execution
+    }
+}
+
+PresentationLayer -- BusinessLogicLayer : Facade
+BusinessLogicLayer -- PersistenceLayer : Facade
+
+note right of PresentationLayer : Handles user interaction and exposes API endpoints.
+note left of BusinessLogicLayer : Contains core business rules and data models.
+note right of PersistenceLayer : Manages data storage and retrieval from the database.
+
+---------------------------------------------------------
+
+Notes explicatives :
+
+Couche de présentation : Cette couche est le point d'entrée pour tous les utilisateurs
+
+Couche logique métier : Cette couche encapsule les objets de classe
+
+Couche de persistance : Cette couche assure le stockage dans la base de données
+
+Motif de façade : C'est le design pattern, montre la communication entre différents entités 
+
+Présentation à Business Logic Facade : La couche de la représentation des entités 
+
+-------------------------------------------------------
+
+# Persistence Layer
+class DatabaseInterface:
+    def get_user(self, user_id):
+        # Database logic to retrieve user
+        pass
+
+# Business Logic Layer Facade
+class UserRepository:
+    def __init__(self, db_interface: DatabaseInterface):
+        self.db_interface = db_interface
+
+    def get(self, user_id):
+        return self.db_interface.get_user(user_id)
+
+# Business Logic Layer
+class UserService:
+    def __init__(self, user_repository: UserRepository):
+        self.user_repository = user_repository
+
+    def get_user(self, user_id):
+        user = self.user_repository.get(user_id)
+        # Additional business logic
+        return user
+
+# Presentation Layer
+class UserAPI:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+
+    def get(self, user_id):
+        user = self.user_service.get_user(user_id)
+        # Response formatting
+        return user
+
+---------------------------------------------------------------------
+
+
+
+Tâche 2 : Diagramme de classe détaillé pour la couche logique métier :
+----------------------------------------------------------------------
+
+Diagramme (Description) :
+
+classDiagram
+    class User {
+        -uuid userId: UUID
+        -string firstName
+        -string lastName
+        -string email
+        -string password
+        -datetime createdAt
+        -datetime updatedAt
+        +register()
+        +login()
+        +updateProfile()
+    }
+
+    class Place {
+        -uuid placeId: UUID
+        -string name
+        -string description
+        -string address
+        -float latitude
+        -float longitude
+        -uuid ownerId: UUID
+        -datetime createdAt
+        -datetime updatedAt
+        +addAmenity()
+        +updateDetails()
+    }
+
+    class Review {
+        -uuid reviewId: UUID
+        -uuid placeId: UUID
+        -uuid userId: UUID
+        -int rating
+        -string comment
+        -datetime createdAt
+        -datetime updatedAt
+        +submitReview()
+        +updateReview()
+    }
+
+    class Amenity {
+        -uuid amenityId: UUID
+        -string name
+        -string description
+        -datetime createdAt
+        -datetime updatedAt
+        +createAmenity()
+    }
+
+    User "1" -- "0..*" Place : owns
+    Place "1" -- "0..*" Review : has
+    User "1" -- "0..*" Review : writes
+    Place "1" -- "0..*" Amenity : has
+
+------------------------------------
+
+Notes explicatives :
+
+Utilisateur, les caractéristiques le l'objet utilisateur sont :
+
+Attributs : ID de l'utilisateur(UUID), prénom, nom de famille, e-maile-mail, mot de passe crée, mise à jour.
+
+Méthodes : régiregistre(), se connecter(), mettre à jour le profil().
+
+Lieu : les endroits 
+
+Attributs: identifiant de lieu(nom, description, ajouteradresse, latitude, longitude, identifiant du propriétaire(UUID), créé à, et sont mis à jour.
+
+Méthodes :`addAmenity(ajouterAmenity(),updateDetails().
+
+Revoir: Représente un avis sur un lieu
+
+Attributs: ID de révision(UUID), identifiant de lieu(UUID), ID de l'utilisateur(UUID), notation, commentaire, créés et sont mis à jour.
+
+Méthodes : soumettreReview(), `mise à jourRemettre à jourReview().
+
+Aménité: Représente une fonctionnalité ou un service offert dans un lieu
+
+Attributs: identifiant d'agrément(UUID), nom, description de chaque objet.
+
+Méthodes : créerAmenity().
+
+Relations :
+
+L'utilisateur est propriétaire de Place: Un utilisateur peut posséder plusieurs lieux.
+
+L'endroit a un avis: Un lieu peut avoir plusieurs localités
+
+L'utilisateur écrit une critique : Un utilisateur peut écrire plusieurs avis.
+
+L'endroit dispose d'équipements : Un endroit peut avoir plusieurs équipement
+
+Toutes les entités UUID comme identifiant et créés et sont mis à jour pour suivre la cohérence des données
+
+-------------------------------------------------------
+
+
+Tâche 3 : Diagrammes de séquence pour les appels d'API
+-----------------------------------------------------
+
+1. Enregistrement de l'utilisateur
+----------------------------------
+
+sequenceDiagram
+    participant User
+    participant PresentationLayer
+    participant BusinessLogicLayer
+    participant PersistenceLayer
+
+    User->>PresentationLayer: POST /users (registration data)
+    PresentationLayer->>BusinessLogicLayer: validate_user_registration(data)
+    BusinessLogicLayer->>BusinessLogicLayer: Create User object
+    BusinessLogicLayer->>PersistenceLayer: save_user(User object)
+    PersistenceLayer->>PersistenceLayer: Insert user record into database
+    PersistenceLayer-->>BusinessLogicLayer: Success/Failure
+    BusinessLogicLayer-->>PresentationLayer: Return user ID/Error
+    PresentationLayer-->>User: Return Success/Failure
+
+------------------------------------------------------------------------
+
+2. Création de lieu
+------------------
+
+Diagramme (Description) :
+
+sequenceDiagram
+    participant User
+    participant PresentationLayer
+    participant BusinessLogicLayer
+    participant PersistenceLayer
+
+    User->>PresentationLayer: POST /places (place data)
+    PresentationLayer->>BusinessLogicLayer: validate_place_creation(data)
+    BusinessLogicLayer->>BusinessLogicLayer: Create Place object
+    BusinessLogicLayer->>PersistenceLayer: save_place(Place object)
+    PersistenceLayer->>PersistenceLayer: Insert place record into database
+    PersistenceLayer-->>BusinessLogicLayer: Success/Failure
+    BusinessLogicLayer-->>PresentationLayer: Return place ID/Error
+    PresentationLayer-->>User: Return Success/Failure
+
+
+-----------------------------------
+
+3. Soumission de l'examen
+------------------------
+
+Diagramme (Description) :
+
+
+sequenceDiagram
+    participant User
+    participant PresentationLayer
+    participant BusinessLogicLayer
+    participant PersistenceLayer
+
+    User->>PresentationLayer: POST /reviews (review data)
+    PresentationLayer->>BusinessLogicLayer: validate_review_submission(data)
+    BusinessLogicLayer->>BusinessLogicLayer: Create Review object
+    BusinessLogicLayer->>PersistenceLayer: save_review(Review object)
+    PersistenceLayer->>PersistenceLayer: Insert review record into database
+    PersistenceLayer-->>BusinessLogicLayer: Success/Failure
+    BusinessLogicLayer-->>PresentationLayer: Return review ID/Error
+    PresentationLayer-->>User: Return Success/Failure
+
+
+-------------------------------------------------------------------
+
+
+4. Récupérer une liste de lieux
+------------------------------
+
+Diagramme (Description) :
+
+
+sequenceDiagram
+    participant User
+    participant PresentationLayer
+    participant BusinessLogicLayer
+    participant PersistenceLayer
+
+    User->>PresentationLayer: GET /places (search criteria)
+    PresentationLayer->>BusinessLogicLayer: get_places(search criteria)
+    BusinessLogicLayer->>PersistenceLayer: fetch_places(search criteria)
+    PersistenceLayer->>PersistenceLayer: Query database for places matching criteria
+    PersistenceLayer-->>BusinessLogicLayer: List of Place objects
+    BusinessLogicLayer-->>PresentationLayer: List of Place objects
+    PresentationLayer-->>User: List of Place objects
+
+
+-----------------------------------------------------------
+
+Tâche 4 : Compilation de la documentation
+----------------------------------------
+
+
+Structure du document :
+----------------------
+
+Introduction 
+
+	Objectif du document : Fournir une description technique détaillée
+
+	Portée : couvre l'architecture de haut niveau,
+
+Architecture de haut niveau
+
+	Diagramme : Inclure le package
+
+Description :
+
+	Explication de l'architecture à trois niveaux
+
+	Responsabilités de chaque couche.
+
+
+Couche logique métier
+
+	Diagramme : Inclure le diagramme de classe
+
+Description :
+
+	Explication détaillée de chaque entité (Utilisateur, Lieu)
+
+	Description des attributs et des méthodes de chaque entité.
+
+Expliquez
+
+	Rationnel
+
+	Flux d'interaction API
+
+	Diagrammes : Inclure les diagrammes de séquence créés dans la tâche 3 (enregistrement de l'utilisateur, création d'un lieu, soumission de l'examen)
+
+Description :
+
+Pour chaque appel d'API, sont fournis :
+
+	Une brève description de l'appel API et de son objectif
+
+	Explication de la séquence d'interactions entre les couches.
+
+
