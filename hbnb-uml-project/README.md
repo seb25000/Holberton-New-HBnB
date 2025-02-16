@@ -17,7 +17,23 @@ https://github.com/seb25000/Holberton-New-HBnB/blob/main/hbnb-uml-project/README
 
 2. Sequence Diagrams for API Calls :
 
-https://github.com/seb25000/Holberton-New-HBnB/blob/main/hbnb-uml-project/README
+
+Utilisateurs :
+
+![user](https://github.com/user-attachments/assets/c70493b7-9511-4497-afd1-19ae524579a7)
 
 
+Lieux :
+
+![lieu](https://github.com/user-attachments/assets/d33473dc-2b6f-4ef1-99ec-032e69ea14b2)
+
+
+Liste des lieux :
+
+![liste_des_lieux](https://github.com/user-attachments/assets/822e8d5b-ffc7-474a-98b4-0f27364aef6c)
+
+
+Examens de l'ensemble :
+
+![examen](https://github.com/user-attachments/assets/dac77fc3-d6cf-464c-863d-5105f53e9c09)
 
