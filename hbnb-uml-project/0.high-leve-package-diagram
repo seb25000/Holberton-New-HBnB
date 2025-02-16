@@ -1,0 +1,87 @@
+@startuml
+' Style settings (optional)
+skinparam backgroundColor #FFFFFF
+skinparam classBackgroundColor #EEEEEE
+skinparam classBorderColor #888888
+skinparam classStereotypeFontSize 10
+skinparam packageBorderColor #008000
+skinparam packageBackgroundColor #E0FFE0
+
+' Packages
+package "Presentation Layer\n(Services, API)" {
+    class ApiEndpoint {
+        ' Handles incoming requests
+        ' Uses Facade to access business logic
+    }
+    class Service {
+        ' Provides specific application functionality
+        ' Uses Facade to access business logic
+    }
+}
+
+package "Business Logic Layer\n(Models)" {
+    class User {
+        ' User entity
+    }
+    class Place {
+        ' Place entity
+    }
+    class Review {
+        ' Review entity
+    }
+    class Amenity {
+        ' Amenity entity
+    }
+
+    package Facade {
+        class HBnBFacade {
+            ' Provides a simplified interface to the Business Logic and Persistence layers
+        }
+    }
+
+}
+
+package "Persistence Layer" {
+    class UserRepository {
+        ' Manages user data in the database
+    }
+    class PlaceRepository {
+        ' Manages place data in the database
+    }
+    class ReviewRepository {
+        ' Manages review data in the database
+    }
+    class AmenityRepository {
+        ' Manages amenity data in the database
+    }
+    class Database {
+        ' Represents the database connection
+    }
+}
+
+' Relationships
+
+ApiEndpoint -- HBnBFacade : Uses
+Service -- HBnBFacade : Uses
+
+HBnBFacade -- User : Manages
+HBnBFacade -- Place : Manages
+HBnBFacade -- Review : Manages
+HBnBFacade -- Amenity : Manages
+
+UserRepository -- User : Manages
+PlaceRepository -- Place : Manages
+ReviewRepository -- Review : Manages
+AmenityRepository -- Amenity : Manages
+
+UserRepository -- Database : Connects to
+PlaceRepository -- Database : Connects to
+ReviewRepository -- Database : Connects to
+AmenityRepository -- Database : Connects to
+
+User -- UserRepository : Uses
+Place -- PlaceRepository : Uses
+Review -- ReviewRepository : Uses
+Amenity -- AmenityRepository : Uses
+
+@enduml
